@@ -15,6 +15,13 @@ Manager::Manager(Player* player, sf::Vector2f gameSize, sf::Font& font)
 	scoreText.setOutlineColor(sf::Color::Black); // infill color is white by defualt
 	setScoreNormal();
 
+	globalShader.loadFromFile("resources/globaleffects.frag", sf::Shader::Fragment);
+	globalShader.setUniform("iResolution", gameSize);
+	globalShader.setUniform("iTexture", sf::Shader::CurrentTexture);
+	globalShader.setUniform("iShockPosition", sf::Vector2f(-9999, -9999));
+	globalShader.setUniform("iShock", false);
+	globalShader.setUniform("iFlash", false);
+
 	// LEVEL 1
 	Level* lvl1 = new Level(player);
 	lvl1->setSpawn(sf::Vector2f(gameSize.x * .2f, gameSize.y * .8f), 90.f);
@@ -59,8 +66,20 @@ void Manager::setScoreFinish() {
 }
 
 void Manager::update(float dt) {
-	player->update(dt);
-	levels[activeLevel]->update(dt);
+	float sdt = dt * timeScale;
+	player->update(sdt);
+	levels[activeLevel]->update(sdt);
+	globalTime += sdt;
+
+	if (slomoTimer > 0.f) {
+		slomoTimer -= dt;
+
+		if (slomoTimer <= 0.f) {
+			timeScale = 1.f;
+		}
+	}
+
+	globalShader.setUniform("iTime", globalTime);
 
 	std::ostringstream ss;
 	ss << std::fixed << std::setprecision(3) << levels[activeLevel]->getScore();
@@ -73,7 +92,7 @@ void Manager::update(float dt) {
 		setScoreFinish();
 	}
 	else if (waitAfterLevelTimer > 0.f) {
-		waitAfterLevelTimer -= dt;
+		waitAfterLevelTimer -= sdt;
 		
 		float t = (1 - waitAfterLevelTimer) / waitAfterLevelTime;
 		float y = 1 * pow(2.7, -8 * t) * (1 - 8 * t) + gameSize.y / 4.f;
@@ -97,4 +116,24 @@ void Manager::render(sf::RenderTarget* target) const {
 
 void Manager::renderUI(sf::RenderTarget* target) const {
 	target->draw(scoreText);
+}
+
+void Manager::shockwave(sf::Vector2f position, float velSq) {
+	globalShader.setUniform("iShockPosition", position);
+	globalShader.setUniform("iShockStartTime", globalTime);
+
+	bool shocking = velSq > 400.f;
+	bool flashing = velSq > 1600.f;
+
+	globalShader.setUniform("iShock", shocking);
+	globalShader.setUniform("iFlash", flashing);
+
+	// TODO: make the shocking/flashing modify the score too
+	if (shocking) {
+		slomoTimer = slomoTime;
+		timeScale = slomoTimescale;
+	}
+	if (flashing) {
+		slomoTimer *= 2;
+	}
 }

@@ -2,13 +2,15 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Level.h"
 #include "ParticleSystem.h"
 
+class Level;
+class Manager;
 class Player {
 public:
 	Player(sf::Vector2f pos, sf::Vector2f size);
 
+	void setManager(Manager* manager);
 	void setLevel(Level* level);
 
 	void update(float dt);
@@ -36,6 +38,7 @@ private:
 	void checkCollision();
 	void updateChains(float dt);
 
+	Manager* manager = nullptr;
 	Level* level = nullptr;
 
 	float acc = 1000.f;

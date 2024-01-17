@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "Player.h"
+#include "Manager.h"
+#include "Level.h"
 #include "Target.h"
 #include "Wall.h"
 
@@ -28,6 +30,7 @@ Player::Player(sf::Vector2f pos, sf::Vector2f size)
 	generateChain();
 }
 
+void Player::setManager(Manager* manager) { this->manager = manager; }
 void Player::setLevel(Level* level) { this->level = level; }
 void Player::disable() { alive = false; }
 
@@ -137,7 +140,9 @@ void Player::checkCollision() {
 		
 		if (distanceSq < (targetRadius + tailRadius) * (targetRadius + tailRadius)) {
 			// HIT TARGET
-			t->onHit(*(tailPos + 1)); // tailPos + 1 is vel
+			sf::Vector2f tailVel = *(tailPos + 1); // disguisting. vel is stored after pos in ChainNode struct
+			t->onHit(tailVel);
+			manager->shockwave(t->getShape().getPosition(), tailVel.x * tailVel.x + tailVel.y * tailVel.y);
 		}
 	}
 }

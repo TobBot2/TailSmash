@@ -34,6 +34,8 @@ int main()
 	Player player(sf::Vector2f(window.getSize()) / 2.f, sf::Vector2f(60.f, 35.f));
 	Manager manager(&player, sf::Vector2f(window.getSize()), font);
 
+	player.setManager(&manager);
+
 	window.setVerticalSyncEnabled(false);
 	window.setFramerateLimit(60);
 	while (window.isOpen())
@@ -81,7 +83,8 @@ int main()
 		manager.render(&lowresWindow);
 
 		lowresWindow.display();
-		window.draw(lowresSprite);
+
+		window.draw(lowresSprite, &manager.getShader());
 		// ui
 		window.draw(fpsText);
 
