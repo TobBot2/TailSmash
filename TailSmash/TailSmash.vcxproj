@@ -157,6 +157,12 @@
   <ItemGroup>
     <None Include="resources\globaleffects.frag" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="resources\exp-big.wav" />
+    <Media Include="resources\exp-med.wav" />
+    <Media Include="resources\exp-sml.wav" />
+    <Media Include="resources\musicLD38T9.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -1,0 +1,12 @@
+Retroica.ttf - https://www.dafont.com/retroica.font
+	personal use only
+
+musicLD38T9.wav - https://soundcloud.com/abstraction/ludum-dare-38-track-nine-game-loop-free-download?in=abstraction/sets/ludum-dare-challenge&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
+	Attribution Share Alike
+
+exp-sml.wav - https://freesound.org/people/dobroide/sounds/24635/
+	Attribution 4.0
+exp-med.wav - https://freesound.org/people/LiamG_SFX/sounds/322502/?
+	Attribution Non commercial 4.0
+exp-big.wav - https://freesound.org/people/LiamG_SFX/sounds/322509/?
+	Attribution Non commercial 4.0

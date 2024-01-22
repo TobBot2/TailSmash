@@ -22,6 +22,14 @@ Manager::Manager(Player* player, sf::Vector2f gameSize, sf::Font& font)
 	globalShader.setUniform("iShock", false);
 	globalShader.setUniform("iFlash", false);
 
+	expSml.loadFromFile("resources/exp-sml.wav");
+	expMed.loadFromFile("resources/exp-med.wav");
+	expBig.loadFromFile("resources/exp-big.wav");
+
+	barrelSml.setBuffer(expSml);
+	barrelMed.setBuffer(expMed);
+	barrelBig.setBuffer(expBig);
+
 	// LEVEL 1
 	Level* lvl1 = new Level(player);
 	lvl1->setSpawn(sf::Vector2f(gameSize.x * .2f, gameSize.y * .8f), 90.f);
@@ -128,12 +136,16 @@ void Manager::shockwave(sf::Vector2f position, float velSq) {
 	globalShader.setUniform("iShock", shocking);
 	globalShader.setUniform("iFlash", flashing);
 
+	barrelSml.play();
+
 	// TODO: make the shocking/flashing modify the score too
 	if (shocking) {
 		slomoTimer = slomoTime;
 		timeScale = slomoTimescale;
+		barrelMed.play();
 	}
 	if (flashing) {
 		slomoTimer *= 2;
+		barrelBig.play();
 	}
 }

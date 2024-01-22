@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 class Player;
 class Level;
@@ -39,6 +40,14 @@ private:
 	float slomoTimescale = 0;
 	float slomoTime = .05f;
 	float slomoTimer = 0.f;
+
+	sf::SoundBuffer expSml;
+	sf::SoundBuffer expMed;
+	sf::SoundBuffer expBig;
+
+	sf::Sound barrelSml;
+	sf::Sound barrelMed;
+	sf::Sound barrelBig;
 
 	sf::Vector2f gameSize;
 	sf::Shader globalShader;

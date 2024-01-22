@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 
 #include "Player.h"
@@ -21,8 +22,15 @@ int main()
 
 	sf::Font font;
 	if (!font.loadFromFile("resources/Retroica.ttf")) {
-		std::cout << "error loading font Retroica";
+		std::cout << "error loading font resources/Retroica.ttf\n";
 	}
+
+	sf::Music music;
+	if (!music.openFromFile("resources/musicLD38T9.wav")) {
+		std::cout << "error loading background music resources/musicLD38T9.wav\n";
+	}
+	music.setLoop(true);
+	music.play();
 
 	sf::Text fpsText("", font);
 	fpsText.setOutlineColor(sf::Color::Black); // infill color is white by defualt
