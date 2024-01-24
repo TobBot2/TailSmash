@@ -11,16 +11,16 @@ Player::Player(sf::Vector2f pos, sf::Vector2f size)
 	bodyShape.setPosition(pos);
 	bodyShape.setSize(size);
 	bodyShape.setOrigin(size / 2.f);
-	bodyShape.setFillColor(sf::Color(200, 200, 200));
+	bodyShape.setFillColor(sf::Color(0xa0a08bff));
 	bodyShape.setOutlineThickness(5.f);
-	bodyShape.setOutlineColor(sf::Color::Black);
+	bodyShape.setOutlineColor(sf::Color(0x211e20ff));
 	bodyShape.setRotation(90.f);
 
 	tailShape.setRadius(tailRadius);
 	tailShape.setOrigin(tailRadius, tailRadius);
-	tailShape.setFillColor(sf::Color(180, 180, 220));
+	tailShape.setFillColor(sf::Color(0xa0a08bff));
 	tailShape.setOutlineThickness(5.f);
-	tailShape.setOutlineColor(sf::Color::Black);
+	tailShape.setOutlineColor(sf::Color(0x211e20ff));
 
 	particles.setDecay(0.f);
 	particles.setAngleVariability(3.141f / 8.f, true);
@@ -65,9 +65,9 @@ void Player::render(sf::RenderTarget* target) const {
 
 	int index = 0;
 	sf::VertexArray chainVerts(sf::PrimitiveType::LineStrip, chainNodes.size() + 1);
-	chainVerts[index++] = sf::Vertex(bodyShape.getPosition(), sf::Color::Black);
+	chainVerts[index++] = sf::Vertex(bodyShape.getPosition(), sf::Color(0x211e20ff));
 	for (const ChainNode* n : chainNodes) {
-		chainVerts[index++] = sf::Vertex(n->pos, sf::Color::Black);
+		chainVerts[index++] = sf::Vertex(n->pos, sf::Color(0x211e20ff));
 	}
 	target->draw(chainVerts);
 
@@ -121,7 +121,7 @@ void Player::checkCollision() {
 			wallBounds.contains(bodyShape.getPosition() + sf::Vector2f(sides.x / 2.f, -sides.y / 2.f)) ||
 			wallBounds.contains(bodyShape.getPosition() + sf::Vector2f(-sides.x / 2.f, sides.y / 2.f))) {
 			// HIT WALL
-			bodyShape.setFillColor(sf::Color::Red);
+			bodyShape.setFillColor(sf::Color(0x902e29ff));
 			vel *= -.4f;
 			alive = false;
 			level->playerDie();

@@ -7,7 +7,9 @@ Target::Target(sf::Vector2f position)
 	shape.setPosition(position);
 	shape.setRadius(radius);
 	shape.setOrigin(radius, radius);
+	shape.setFillColor(sf::Color(0xe9efecff));
 	shape.setOutlineThickness(5.f);
+	shape.setOutlineColor(sf::Color(0x211e20ff));
 
 	particles.setSpawnRange(radius);
 }

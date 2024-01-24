@@ -12,7 +12,8 @@ Manager::Manager(Player* player, sf::Vector2f gameSize, sf::Font& font)
 	: player(player), gameSize(gameSize) {
 
 	scoreText = sf::Text("0.000", font);
-	scoreText.setOutlineColor(sf::Color::Black); // infill color is white by defualt
+	scoreText.setFillColor(sf::Color(0xe9efecff));
+	scoreText.setOutlineColor(sf::Color(0x211e20ff));
 	setScoreNormal();
 
 	globalShader.loadFromFile("resources/globaleffects.frag", sf::Shader::Fragment);

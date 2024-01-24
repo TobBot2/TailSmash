@@ -33,7 +33,8 @@ int main()
 	music.play();
 
 	sf::Text fpsText("", font);
-	fpsText.setOutlineColor(sf::Color::Black); // infill color is white by defualt
+	fpsText.setFillColor(sf::Color(0xe9efecff));
+	fpsText.setOutlineColor(sf::Color(0x211e20ff));
 	fpsText.setOutlineThickness(3.f);
 	fpsText.setPosition(0, 0);
 	const float updateFpsTextTime = .5f;
@@ -86,7 +87,7 @@ int main()
 		lowresWindow.setView(view);
 
 		// render
-		lowresWindow.clear(sf::Color(140, 140, 140));
+		lowresWindow.clear(sf::Color(0x555568ee));
 
 		manager.render(&lowresWindow);
 
