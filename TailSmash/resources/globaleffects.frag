@@ -133,21 +133,28 @@ void main() {
     vec2 uv = CRTCurveUV(gl_TexCoord[0].xy);
     vec4 pixel = texture2D(iTexture, uv);
 
-    if (iFlash && explosionFlash()) {
-        //pixel = vec4(0, 0, 0, 255);
-        //if (true || pixel.rgb != vec3(0, 0, 0)) {
+    // only do flashes/explosions in the first second
+    if (iTime - iShockStartTime < 1) {
+        if (iFlash && explosionFlash()) {
+            if (pixel.r + pixel.g + pixel.b < 1) {
+                pixel = vec4(0, 0, 0, 255);
+            } else {
+                pixel = vec4(255, 255, 255, 255);
+            }
+
             vec2 position = vec2(iShockPosition.x, iResolution.y - iShockPosition.y);
             float dist = distance(position / iResolution, uv);
             float power = clamp(1 - dist * 2, 0, 1);
             pixel += vec4(power, power, power, 10);
-        //}
-        gl_FragColor = gl_Color * pixel;
-        return;
-    }
+        
+            gl_FragColor = gl_Color * pixel;
+            return;
+        }
 
-    if (iShock) {
-        pixel = shockwave(uv);
-        pixel += explosion(uv);
+        if (iShock) {
+            pixel = shockwave(uv);
+            pixel += explosion(uv);
+        }
     }
 
     DrawScanline(pixel.rgb, uv);

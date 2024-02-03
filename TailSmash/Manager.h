@@ -7,7 +7,9 @@ class Player;
 class Level;
 class Manager {
 public:
-	Manager(Player* player, sf::Vector2f gameSize, sf::Font& font);
+	Manager(sf::Vector2f gameSize);
+	void setPlayer(Player* player);
+	void setFont(sf::Font& font);
 
 	void setScoreNormal();
 	void setScoreFinish();

@@ -78,7 +78,7 @@ void Player::render(sf::RenderTarget* target) const {
 void Player::respawn(sf::Vector2f position, float rotation) {
 	bodyShape.setPosition(position);
 	bodyShape.setRotation(rotation);
-	bodyShape.setFillColor(sf::Color(200, 200, 200));
+	bodyShape.setFillColor(sf::Color(0xa0a08bff));
 	vel = 0.f;
 
 	for (ChainNode* c : chainNodes) {

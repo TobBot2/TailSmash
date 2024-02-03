@@ -7,8 +7,7 @@ class Wall;
 class Player;
 class Level {
 public:
-	Level(Player* player);
-
+	void setPlayer(Player* player);
 	void setSpawn(sf::Vector2f position, float rotation);
 	void addTarget(sf::Vector2f position);
 	void addWall(sf::Vector2f topleft, sf::Vector2f size);

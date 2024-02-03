@@ -3,7 +3,9 @@
 #include "Target.h"
 #include "Wall.h"
 
-Level::Level(Player* player) : player(player) { }
+void Level::setPlayer(Player* player) {
+	this->player = player;
+}
 
 void Level::setSpawn(sf::Vector2f position, float rotation) {
 	spawnPoint = position;
