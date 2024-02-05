@@ -64,7 +64,7 @@
     }
 
     function exportLvl() {
-        let exportStr = `Level* lvl = new Level();\nlevels.push_back(lvl);\nlvl->setSpawn(sf::Vector2f(${spawn.x}.f,${spawn.y}.f));\n`
+        let exportStr = `Level* lvl = new Level();\nlvl->setSpawn(sf::Vector2f(${spawn.x}.f,${spawn.y}.f), 180.f);\n`
         for (const wall of walls) {
             exportStr += `lvl->addWall(sf::Vector2f(${wall.x}, ${wall.y}), sf::Vector2f(${wall.width}, ${wall.height}));\n`
         }
@@ -155,7 +155,7 @@
     }
 
     document.onclick = function (e) {
-        if (e.target.nodeName == "BUTTON") {
+        if (e.target.nodeName == "BUTTON" || e.target.id == "output") {
             return; // ignore if clicking a button
         }
         if (typeToAdd == "wall") {
@@ -183,9 +183,9 @@
 
                 const offset = 2;
                 wall.x += offset;
-                wall.y += offset;
-                wall.width -= offset * 2;
-                wall.height -= offset * 2;
+                wall.y += offset * 2;
+                wall.width -= offset * 4;
+                wall.height -= offset * 4;
     
                 walls.push({
                     ...wall

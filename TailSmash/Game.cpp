@@ -74,7 +74,7 @@ void Game::render(sf::RenderTarget* target) {
 		ImGui::SetNextWindowPos(windowPos);
 		ImGui::Begin("no window", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-		if (ImGui::Button("Continue", buttonSize)) {
+		if (ImGui::Button("Resume", buttonSize)) {
 			state = GameState::Play;
 		}
 		ImGui::SetCursorPos(ImVec2(buttonSize.x / 4.f, buttonSize.y * 1.15f));
@@ -99,11 +99,55 @@ void Game::render(sf::RenderTarget* target) {
 			state = GameState::Play;
 			manager.setScoreNormal();
 		}
-		ImGui::SetCursorPos(ImVec2(buttonSize.x / 4.f, buttonSize.y * 1.15f));
-		if (ImGui::Button("Quit", ImVec2(buttonSize.x * .5f, buttonSize.y * .5f))) {
+		ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX(), buttonSize.y * 1.15f));
+		if (ImGui::Button("Levels", ImVec2(buttonSize.x * .5f, buttonSize.y * .5f))) {
+			state = GameState::LevelSelect;
+		}
+		ImGui::SetCursorPos(ImVec2(buttonSize.x * .6f, buttonSize.y * 1.15f));
+		if (ImGui::Button("Quit", ImVec2(buttonSize.x * .4f, buttonSize.y * .4f))) {
 			ImGui::SFML::Shutdown();
 			exit(0); // unclean exit but idc
 		}
+		ImGui::End();
+
+		lowresWindow.display();
+		target->draw(lowresSprite);
+	}
+	else if (state == GameState::LevelSelect) {
+		ImVec2 gridSize(target->getSize().x * .6f, target->getSize().y * .9f);
+		ImVec2 gridPos(target->getSize().x * .2f, target->getSize().y * .05f);
+		ImGui::SetNextWindowSize(gridSize);
+		ImGui::SetNextWindowPos(gridPos);
+		ImGui::Begin("level buttons", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+
+		ImVec2 buttonSize(ImGui::GetWindowSize().x / 8.f, ImGui::GetWindowSize().x / 10.f);
+		const int GRID_SIZE = 5;
+		// Display grid of buttons
+		for (int i = 0; i < GRID_SIZE; ++i) {
+			ImGui::Columns(GRID_SIZE, nullptr, true);
+			ImGui::Separator();
+			for (int j = 0; j < GRID_SIZE; ++j) {
+				int level = i * GRID_SIZE + j;
+				if (ImGui::Button((std::to_string(level + 1)).c_str(), buttonSize)) {
+					manager.resetLevel(level);
+					state = GameState::Play;
+				}
+				ImGui::NextColumn();
+			}
+			ImGui::Separator();
+		}
+		ImGui::End();
+
+		ImVec2 backButtonSize(target->getSize().x * .4f, buttonSize.y * 1.5f);
+		ImGui::SetNextWindowPos(ImVec2(gridPos.x, gridPos.y + gridSize.y - buttonSize.y * 2.5f));
+		ImGui::Begin("back button", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		// Exit button separate from the grid
+		if (ImGui::Button("Back", backButtonSize)) {
+			state = GameState::Menu;
+		}
+
 		ImGui::End();
 
 		lowresWindow.display();

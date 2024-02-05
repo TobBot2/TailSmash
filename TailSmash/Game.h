@@ -8,6 +8,7 @@ class Game {
 public:
 	enum GameState {
 		Menu,
+		LevelSelect,
 		Settings,
 		Credits,
 		Play,

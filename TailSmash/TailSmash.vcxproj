@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="Game.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="Levels.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />

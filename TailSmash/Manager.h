@@ -14,6 +14,8 @@ public:
 	void setScoreNormal();
 	void setScoreFinish();
 
+	void resetLevel(int level = -1);
+
 	void update(float dt);
 
 	void render(sf::RenderTarget* target) const;
