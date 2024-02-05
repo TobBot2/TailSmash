@@ -1,6 +1,9 @@
 #include <iostream>
 #include <SFML/Audio.hpp>
 
+#include "imgui.h"
+#include "imgui-SFML.h"
+
 #include "Game.h"
 
 Game::Game(sf::View view) :
@@ -43,6 +46,10 @@ void Game::update(float elapsedTime) {
 
 	if (state == GameState::Play) {
 		manager.update(elapsedTime);
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+			state = GameState::Pause;
+		}
 	}
 }
 
@@ -54,16 +61,54 @@ void Game::render(sf::RenderTarget* target) {
 
 	if (state == GameState::Play) {
 		manager.render(&lowresWindow);
+		lowresWindow.display();
+		target->draw(lowresSprite, &manager.getShader());
+		manager.renderUI(target);
 	}
 	else if (state == GameState::Pause) {
 		manager.render(&lowresWindow);
-		// TODO: render transparent cover + extra buttons (continue/menu)
-	}
+		ImVec2 screenSize((float)target->getSize().x, (float)target->getSize().y);
+		ImVec2 buttonSize(screenSize.x * .3f, screenSize.y * .2f); // Size of the ImGui window
+		ImVec2 windowPos((screenSize.x - buttonSize.x) / 2.f, (screenSize.y - buttonSize.y) / 2.f);
 
-	lowresWindow.display();
-	target->draw(lowresSprite, &manager.getShader());
-	// ui
-	manager.renderUI(target);
+		ImGui::SetNextWindowPos(windowPos);
+		ImGui::Begin("no window", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		if (ImGui::Button("Continue", buttonSize)) {
+			state = GameState::Play;
+		}
+		ImGui::SetCursorPos(ImVec2(buttonSize.x / 4.f, buttonSize.y * 1.15f));
+		if (ImGui::Button("Menu", ImVec2(buttonSize.x * .5f, buttonSize.y * .5f))) {
+			state = GameState::Menu;
+		}
+		ImGui::End();
+
+		lowresWindow.display();
+		target->draw(lowresSprite, &manager.getShader());
+		manager.renderUI(target);
+	}
+	else if (state == GameState::Menu) {
+		ImVec2 screenSize((float)target->getSize().x, (float)target->getSize().y);
+		ImVec2 buttonSize(screenSize.x * .3f, screenSize.y * .2f); // Size of the ImGui window
+		ImVec2 windowPos((screenSize.x - buttonSize.x) / 2.f, (screenSize.y - buttonSize.y) / 2.f);
+
+		ImGui::SetNextWindowPos(windowPos);
+		ImGui::Begin("no window", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		if (ImGui::Button("Play", buttonSize)) {
+			state = GameState::Play;
+			manager.setScoreNormal();
+		}
+		ImGui::SetCursorPos(ImVec2(buttonSize.x / 4.f, buttonSize.y * 1.15f));
+		if (ImGui::Button("Quit", ImVec2(buttonSize.x * .5f, buttonSize.y * .5f))) {
+			ImGui::SFML::Shutdown();
+			exit(0); // unclean exit but idc
+		}
+		ImGui::End();
+
+		lowresWindow.display();
+		target->draw(lowresSprite);
+	}
 
 	// DEBUG FPS COUNTER
 	target->draw(fpsText);

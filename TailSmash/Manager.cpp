@@ -53,8 +53,48 @@ Manager::Manager(sf::Vector2f gameSize)
 	lvl2->addWall(sf::Vector2f(0.f, gameSize.y * .11f), sf::Vector2f(gameSize.y * .1f, gameSize.y * .78f)); // vertical border
 	lvl2->addWall(sf::Vector2f(gameSize.x - gameSize.y * .1f, gameSize.y * .11f), sf::Vector2f(gameSize.y * .1f, gameSize.y * .78f)); // vertical border
 
+	// LEVEL 3
+	Level* lvl3 = new Level();
+	lvl3->setSpawn(sf::Vector2f(300.f, 800.f), 90.f);
+	lvl3->addWall(sf::Vector2f(3, 3), sf::Vector2f(2074, 144));
+	lvl3->addWall(sf::Vector2f(3, 1003), sf::Vector2f(2074, 164));
+	lvl3->addWall(sf::Vector2f(3, 153), sf::Vector2f(144, 844));
+	lvl3->addWall(sf::Vector2f(1903, 153), sf::Vector2f(174, 844));
+	lvl3->addWall(sf::Vector2f(603, 603), sf::Vector2f(194, 194));
+	lvl3->addWall(sf::Vector2f(1203, 803), sf::Vector2f(694, 194));
+	lvl3->addWall(sf::Vector2f(1203, 603), sf::Vector2f(194, 194));
+	lvl3->addWall(sf::Vector2f(1403, 603), sf::Vector2f(494, 194));
+	lvl3->addTarget(sf::Vector2f(250, 250));
+	lvl3->addTarget(sf::Vector2f(900, 650));
+	lvl3->addTarget(sf::Vector2f(1350, 250));
+
+	// LEVEL 4
+	Level* lvl4 = new Level();
+	lvl4->setSpawn(sf::Vector2f(250.f, 250.f), 180.f);
+	lvl4->addWall(sf::Vector2f(2, 2), sf::Vector2f(2076, 146));
+	lvl4->addWall(sf::Vector2f(2, 1002), sf::Vector2f(2076, 166));
+	lvl4->addWall(sf::Vector2f(2, 152), sf::Vector2f(146, 846));
+	lvl4->addWall(sf::Vector2f(1902, 152), sf::Vector2f(176, 846));
+	lvl4->addWall(sf::Vector2f(702, 402), sf::Vector2f(196, 96));
+	lvl4->addWall(sf::Vector2f(802, 502), sf::Vector2f(246, 96));
+	lvl4->addWall(sf::Vector2f(702, 602), sf::Vector2f(196, 96));
+	lvl4->addWall(sf::Vector2f(152, 902), sf::Vector2f(346, 96));
+	lvl4->addWall(sf::Vector2f(502, 902), sf::Vector2f(96, 96));
+	lvl4->addWall(sf::Vector2f(602, 902), sf::Vector2f(346, 96));
+	lvl4->addWall(sf::Vector2f(952, 902), sf::Vector2f(96, 96));
+	lvl4->addWall(sf::Vector2f(1052, 902), sf::Vector2f(346, 96));
+	lvl4->addWall(sf::Vector2f(1402, 902), sf::Vector2f(96, 96));
+	lvl4->addWall(sf::Vector2f(1502, 902), sf::Vector2f(396, 96));
+	lvl4->addTarget(sf::Vector2f(850, 250));
+	lvl4->addTarget(sf::Vector2f(1200, 400));
+	lvl4->addTarget(sf::Vector2f(1250, 550));
+	lvl4->addTarget(sf::Vector2f(1200, 700));
+	lvl4->addTarget(sf::Vector2f(850, 850));
+
 	levels.push_back(lvl1);
 	levels.push_back(lvl2);
+	levels.push_back(lvl3);
+	levels.push_back(lvl4);
 }
 
 void Manager::setPlayer(Player* player) {

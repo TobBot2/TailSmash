@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Tail Smash Level Editor</title>
+</head>
+
+<body>
+    <canvas id="my-canvas" width="2080px" height="1170px" style="background-color: #eee; #my-canvas:hover { cursor:none }"></canvas>
+    <div style="min-height: 50px; display: flex; justify-content:stretch; flex-direction:column; width: 2080px; height: 1170px; font-size:xx-large; align-content: stretch">
+        <div style="display:flex;flex-direction:row;"><p style="margin-right: .5em;">Current item:</p> <p id="type" style="font-weight: bold;">wall</p></div>
+        <div style="display:flex;flex-direction:row; justify-content:space-around; align-content:stretch">
+            <button style="height: 55px; font-size: xx-large;" onclick="reset()">Reset Level</button>
+            <button style="height: 55px; font-size: xx-large;" onclick="undo()">Undo</button>
+            <button style="height: 55px; font-size: xx-large;" onclick="exportLvl()">Export</button>
+        </div>
+        <div style="display:flex;flex-direction:row;"><p style="margin-right: .5em;">moues pos:</p> <p id="mouse-pos" style="font-weight: bold;"></p></div>
+        <p id="output" style="user-select: all;"></p>
+    </div>
+</body>
+<script>
+    const canvas = document.getElementById("my-canvas");
+    const g = canvas.getContext("2d");
+
+    let walls = [];
+    let targets = [];
+    let spawn = {
+        x: 1040,
+        y: 585
+    }
+
+    let undoBuffer = [];
+    let typeToAdd = "wall";
+
+    let mouse = { x: 0, y: 0 }
+
+    let currentWall = {
+        x: -1, y: -1,
+    }
+
+    function reset() {
+        walls = [];
+        targets = [];
+        spawn = {
+            x: 1040,
+            y: 585
+        }
+
+        currentWall = {
+            x: -1, y: -1,
+        }
+    }
+
+    function undo() {
+        if (undoBuffer.length == 0) return;
+
+        const lastElement = undoBuffer.pop();
+        if (lastElement == "wall") {
+            walls.pop();
+        } else if (lastElement == "target") {
+            targets.pop();
+        }
+    }
+
+    function exportLvl() {
+        let exportStr = `Level* lvl = new Level();\nlevels.push_back(lvl);\nlvl->setSpawn(sf::Vector2f(${spawn.x}.f,${spawn.y}.f));\n`
+        for (const wall of walls) {
+            exportStr += `lvl->addWall(sf::Vector2f(${wall.x}, ${wall.y}), sf::Vector2f(${wall.width}, ${wall.height}));\n`
+        }
+        for (const target of targets) {
+            exportStr += `lvl->addTarget(sf::Vector2f(${target.x}, ${target.y}));\n`
+        }
+
+        document.getElementById("output").innerText = exportStr;
+        console.log(exportStr);
+    }
+
+    function main() {
+        g.clearRect(0, 0, 2080, 1170);
+
+        if (currentWall.x >= 0) {
+            g.globalAlpha = .5;
+            g.fillStyle = "#222";
+            g.fillRect(currentWall.x, currentWall.y, mouse.x - currentWall.x, mouse.y - currentWall.y);
+            g.globalAlpha = 1;
+        }
+
+        // draw walls
+        g.fillStyle = "#222";
+        for (const wall of walls) {
+            g.fillRect(wall.x, wall.y, wall.width, wall.height);
+        }
+
+        // draw targets
+        g.fillStyle = "#aaa";
+        for (const target of targets) {
+            g.fillRect(target.x - 15, target.y - 15, 30, 30);
+        }
+
+        // draw spawn
+        g.fillStyle = "#e33";
+        g.fillRect(spawn.x - 10, spawn.y - 10, 20, 20);
+
+
+        // grid
+        g.strokeStyle = "#333";
+        for (let x = 0; x < 2080; x += 100) {
+            g.beginPath();
+            g.lineWidth = x % 400 == 0 ? 5 : 1;
+            g.moveTo(x, 0);
+            g.lineTo(x, 1170);
+            g.stroke();
+            g.closePath();
+        }
+        for (let y = 0; y < 1170; y += 100) {
+            g.beginPath();
+            g.lineWidth = y % 400 == 0 ? 5 : 1;
+            g.moveTo(0, y);
+            g.lineTo(2080, y);
+            g.stroke();
+            g.closePath();
+        }
+
+        // crosshair
+        g.strokeStyle = "#f00";
+        g.lineWidth = 3;
+        g.beginPath();
+        g.moveTo(mouse.x - 10, mouse.y); 
+        g.lineTo(mouse.x + 10, mouse.y);
+        g.moveTo(mouse.x, mouse.y - 10); 
+        g.lineTo(mouse.x, mouse.y + 10);
+        g.stroke();
+        g.closePath();
+
+        window.requestAnimationFrame(main);
+    }
+
+    document.onmousemove = function (e) {
+        var rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left; //x position within the element.
+        mouse.y = e.clientY - rect.top;  //y position within the element.
+
+        if (!e.ctrlKey) {
+            mouse.x = Math.round(mouse.x / 50) * 50;
+            mouse.y = Math.round(mouse.y / 50) * 50;
+        }
+
+        if (mouse.x > 2080) { mouse.x = 2080; }
+        else if (mouse.x < 0) { mouse.x = 0; }
+        if (mouse.y > 1170) { mouse.y = 1170; }
+        else if (mouse.y < 0) { mouse.y = 0; }
+
+        document.getElementById("mouse-pos").innerText = `x: ${mouse.x}, y: ${mouse.y}`;
+    }
+
+    document.onclick = function (e) {
+        if (e.target.nodeName == "BUTTON") {
+            return; // ignore if clicking a button
+        }
+        if (typeToAdd == "wall") {
+            if (currentWall.x == mouse.x && currentWall.y == mouse.y) {
+                return;
+            }
+            if (currentWall.x < 0) {
+                currentWall.x = mouse.x;
+                currentWall.y = mouse.y;
+            } else {
+                let wall = {
+                    ...currentWall,
+                    width: mouse.x - currentWall.x,
+                    height: mouse.y - currentWall.y,
+                }
+    
+                if (wall.width <= 0) {
+                    wall.width = -wall.width;
+                    wall.x -= wall.width;
+                }
+                if (wall.height <= 0) {
+                    wall.height = -wall.height;
+                    wall.y -= wall.height;
+                }
+
+                const offset = 2;
+                wall.x += offset;
+                wall.y += offset;
+                wall.width -= offset * 2;
+                wall.height -= offset * 2;
+    
+                walls.push({
+                    ...wall
+                })
+    
+                currentWall.x = -1;
+            }
+        } else if (typeToAdd == "target") {
+            targets.push({...mouse});
+        }
+        undoBuffer.push(typeToAdd)
+    }
+
+    canvas.oncontextmenu = function (e) {
+        e.preventDefault();
+        spawn.x = mouse.x;
+        spawn.y = mouse.y;
+    }
+
+    document.onkeydown = function (e) {
+        if (e.key == '1') {
+            typeToAdd = "wall";
+        } else if (e.key == '2') {
+            typeToAdd = "target";
+        }
+
+        if (e.key == 'z') { // z
+            undo();
+        }
+
+        document.getElementById("type").innerText = typeToAdd;
+    }
+
+    main();
+</script>
+
+</html>

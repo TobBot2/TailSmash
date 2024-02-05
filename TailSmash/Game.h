@@ -21,7 +21,7 @@ public:
 private:
 	static const int pixelSize = 5;
 
-	GameState state = GameState::Play;
+	GameState state = GameState::Menu;
 
 	Player player;
 	Manager manager;
