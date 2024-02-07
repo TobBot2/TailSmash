@@ -1,10 +1,14 @@
 #include <iostream>
+#include <sstream>
+#include <fstream>
+#include <iomanip>
 #include <SFML/Audio.hpp>
 
 #include "imgui.h"
 #include "imgui-SFML.h"
 
 #include "Game.h"
+#include "Level.h"
 
 Game::Game(sf::View view) :
 	player(sf::Vector2f(view.getSize()) / 2.f, sf::Vector2f(60.f, 35.f)),
@@ -37,6 +41,31 @@ Game::Game(sf::View view) :
 	manager.setPlayer(&player);
 	manager.setVolume(sfxVolume);
 	player.setManager(&manager);
+
+	// load highscores
+	std::ifstream highscoresIn;
+	highscoresIn.open("resources/highscores.bin", std::ios::binary);
+	while (!highscoresIn.eof()) {
+		float score = -1.f;
+		highscoresIn.read((char*)&score, sizeof(float));
+		scores.push_back(score);
+	}
+	scores.pop_back(); // reads one too many... just pop the last one
+	highscoresIn.close();
+	if (scores.size() != manager.getLevelCount()) {
+		// highscores.bin has not been initialized. seed with -1's...
+		std::ofstream highscoresOut;
+		highscoresOut.open("resources/highscores.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+		float uninitialized = -1.f;
+		for (int i = 0; i < manager.getLevelCount(); i++) {
+			highscoresOut.write((char*)&uninitialized, sizeof(float));
+		}
+		netHighScore = -1.f;
+		highscoresOut.close();
+	}
+	else {
+		manager.setScores(scores);
+	}
 }
 
 void Game::update(float elapsedTime) {
@@ -97,23 +126,47 @@ void Game::render(sf::RenderTarget* target) {
 		manager.renderUI(target);
 	}
 	else if (state == GameState::Menu) {
+		scores = manager.getScores();
+		netHighScore = 0.f;
+		for (int i = 0; i < scores.size(); i++) {
+			if (scores[i] < 0) {
+				netHighScore = -1.f;
+				break;
+			}
+			netHighScore += scores[i];
+		}
+
+		float highscoreOffset = 0.f;
+		if (netHighScore >= 0) {
+			highscoreOffset = ImGui::GetFontSize();
+		}
+
 		ImVec2 screenSize((float)target->getSize().x, (float)target->getSize().y);
 		ImVec2 buttonSize(screenSize.x * .3f, screenSize.y * .2f); // Size of the ImGui window
-		ImVec2 windowPos((screenSize.x - buttonSize.x) / 2.f, (screenSize.y - buttonSize.y) / 2.f);
+		ImVec2 windowPos((screenSize.x - buttonSize.x) / 2.f, (screenSize.y - buttonSize.y) / 2.f - highscoreOffset);
 
 		ImGui::SetNextWindowPos(windowPos);
 		ImGui::Begin("main buttons", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		
+		if (netHighScore >= 0) {
+			std::ostringstream ss;
+			ss << "Highscore: " << std::fixed << std::setprecision(3) << netHighScore;
+			ImGui::Text(ss.str().c_str());
+		}
 		if (ImGui::Button("Play", buttonSize)) {
 			state = GameState::Play;
 			manager.setScoreNormal();
 		}
-		ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX(), buttonSize.y * 1.15f));
+
+		float bottomButtonsY = ImGui::GetCursorPosY() + buttonSize.y * .15f;
+		ImGui::SetCursorPosY(bottomButtonsY);
 		if (ImGui::Button("Levels", ImVec2(buttonSize.x * .5f, buttonSize.y * .5f))) {
 			state = GameState::LevelSelect;
 		}
-		ImGui::SetCursorPos(ImVec2(buttonSize.x * .6f, buttonSize.y * 1.15f));
+		ImGui::SetCursorPos(ImVec2(buttonSize.x * .6f, bottomButtonsY));
 		if (ImGui::Button("Quit", ImVec2(buttonSize.x * .4f, buttonSize.y * .4f))) {
+			saveScores();
 			ImGui::SFML::Shutdown();
 			exit(0); // unclean exit but idc
 		}
@@ -145,7 +198,7 @@ void Game::render(sf::RenderTarget* target) {
 		ImGui::Begin("level buttons", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 
-		ImVec2 buttonSize(ImGui::GetWindowSize().x / 8.f, ImGui::GetWindowSize().x / 10.f);
+		ImVec2 buttonSize(ImGui::GetWindowSize().x / 8.f, ImGui::GetFontSize() * 1.1f);
 		const int GRID_SIZE = 5;
 		// Display grid of buttons
 		for (int i = 0; i < GRID_SIZE; ++i) {
@@ -153,9 +206,25 @@ void Game::render(sf::RenderTarget* target) {
 			ImGui::Separator();
 			for (int j = 0; j < GRID_SIZE; ++j) {
 				int level = i * GRID_SIZE + j;
+				if (level >= manager.getLevelCount()) {
+					j = GRID_SIZE;
+					i = GRID_SIZE;
+					break; // ugly exit loop method
+				}
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetWindowWidth() / 10.f - buttonSize.x / 2.f);
 				if (ImGui::Button((std::to_string(level + 1)).c_str(), buttonSize)) {
 					manager.resetLevel(level);
 					state = GameState::Play;
+				}
+
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetWindowWidth() / 10.f - buttonSize.x / 2.f);
+				if (level < manager.getLevelCount() && manager.getLevel(level)->getHighScore() >= 0) {
+					std::ostringstream ss;
+					ss << std::fixed << std::setprecision(3) << manager.getLevel(level)->getHighScore();
+					ImGui::Text(ss.str().c_str());
+				}
+				else {
+					ImGui::Text("");
 				}
 				ImGui::NextColumn();
 			}
@@ -190,6 +259,15 @@ void Game::render(sf::RenderTarget* target) {
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
 		ImGui::SliderFloat("SFX Volume", &sfxVolume, 0.f, 100.f, "%.0f", ImGuiSliderFlags_AlwaysClamp);
 		manager.setVolume(sfxVolume);
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
+		if (ImGui::Button("Reset Scores")) {
+			scores = {};
+			for (int i = 0; i < manager.getLevelCount(); i++) {
+				scores.push_back(-1.f);
+			}
+			manager.setScores(scores);
+		}
 
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
 		if (ImGui::Button("Back", ImVec2(screenSize.x / 10.f, screenSize.y / 11.f))) {
@@ -249,4 +327,13 @@ void Game::render(sf::RenderTarget* target) {
 
 	// DEBUG FPS COUNTER
 	//target->draw(fpsText);
+}
+
+void Game::saveScores() {
+	std::ofstream highscoresOut;
+	highscoresOut.open("resources/highscores.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+	for (int i = 0; i < scores.size(); i++) {
+		highscoresOut.write((char*) &scores[i], sizeof(float));
+	}
+	highscoresOut.close();
 }

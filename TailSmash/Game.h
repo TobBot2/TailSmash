@@ -20,6 +20,8 @@ public:
 	void update(float elapsedTime);
 	void render(sf::RenderTarget* target);
 
+	void saveScores();
+
 private:
 	static const int pixelSize = 5;
 
@@ -39,6 +41,9 @@ private:
 
 	float musicVolume = 50.f;
 	float sfxVolume = 50.f;
+
+	std::vector<float> scores;
+	float netHighScore = 0.f;
 
 	sf::Text fpsText;
 	const float updateFpsTextTime = .5f;

@@ -79,6 +79,31 @@ void Manager::resetLevel(int level) {
 	levels[activeLevel]->reset();
 	player->setLevel(levels[activeLevel]);
 	setScoreNormal();
+	waitAfterLevelTimer = 0.f;
+}
+
+Level* Manager::getLevel(int i) {
+	if (i == -1) return levels[activeLevel];
+	return levels[i];
+}
+
+int Manager::getLevelCount() {
+	return levels.size();
+}
+
+std::vector<float> Manager::getScores() {
+	std::vector<float> scores;
+	for (int i = 0; i < levels.size(); i++) {
+		float score = levels[i]->getHighScore();
+		scores.push_back(score);
+	}
+	return scores;
+}
+
+void Manager::setScores(std::vector<float> scores) {
+	for (int i = 0; i < levels.size(); i++) {
+		levels[i]->setHighScore(scores[i]);
+	}
 }
 
 void Manager::update(float dt) {

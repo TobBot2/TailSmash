@@ -40,6 +40,7 @@ int main()
 			ImGui::SFML::ProcessEvent(window, event);
 			switch (event.type) {
 			case sf::Event::Closed:
+				game.saveScores();
 				window.close();
 				break;
 				/*case sf::Event::Resized:
