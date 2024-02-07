@@ -44,6 +44,9 @@ void Level::update(float dt) {
 	if (!targetsLeft) {
 		// WIN
 		complete = true;
+		if (timer < highscore || highscore < 0) {
+			highscore = timer;
+		}
 	}
 }
 
@@ -71,5 +74,13 @@ void Level::reset() {
 }
 
 float Level::getScore() const {
-	return timer; // maybe incorporate velocity of target hit too...
+	return timer;
+}
+
+float Level::getHighScore() const {
+	return highscore;
+}
+
+void Level::setHighScore(float score) {
+	highscore = score;
 }

@@ -90,6 +90,9 @@
     <None Include="resources\globaleffects.frag">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="resources\highscores.bin">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Media Include="resources\musicLD38T9.wav">

@@ -18,6 +18,8 @@ public:
 	void playerDie();
 	void reset();
 	float getScore() const;
+	float getHighScore() const;
+	void setHighScore(float score);
 
 	sf::Vector2f getSpawnPos() const { return spawnPoint; }
 	float getSpawnRot() const { return spawnRotation; }
@@ -36,6 +38,7 @@ private:
 	std::vector<Wall*> walls;
 
 	float timer = 0.f;
+	float highscore = -1.f;
 
 	float respawnTime = .3f;
 	float respawnTimer = 0;

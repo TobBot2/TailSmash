@@ -17,6 +17,11 @@ public:
 
 	void resetLevel(int level = -1);
 
+	Level* getLevel(int i = -1);
+	int getLevelCount();
+	std::vector<float> getScores();
+	void setScores(std::vector<float> scores);
+
 	void update(float dt);
 
 	void render(sf::RenderTarget* target) const;

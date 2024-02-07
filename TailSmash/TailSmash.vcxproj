@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\globaleffects.frag" />
+    <None Include="resources\highscores.bin" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="resources\exp-big.wav" />
