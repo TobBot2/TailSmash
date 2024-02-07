@@ -65,6 +65,12 @@ void Manager::setScoreFinish() {
 	scoreText.setOrigin(scoreText.getGlobalBounds().getSize() / 2.f);
 }
 
+void Manager::setVolume(float volume){
+	barrelSml.setVolume(volume * .7f); // icky 'manually' lowering volume of the .wav file
+	barrelMed.setVolume(volume);
+	barrelBig.setVolume(volume);
+}
+
 void Manager::resetLevel(int level) {
 	if (level >= 0) {
 		activeLevel = level;

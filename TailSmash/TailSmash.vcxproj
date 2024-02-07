@@ -150,7 +150,7 @@
     <ClCompile Include="Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="resources\Retroica.ttf" />
+    <Font Include="resources\mont.otf" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />

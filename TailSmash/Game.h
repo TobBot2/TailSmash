@@ -7,6 +7,7 @@
 class Game {
 public:
 	enum GameState {
+		Splash,
 		Menu,
 		LevelSelect,
 		Settings,
@@ -22,7 +23,9 @@ public:
 private:
 	static const int pixelSize = 5;
 
-	GameState state = GameState::Menu;
+	GameState state = GameState::Splash;
+
+	float splashDelay = 3.f;
 
 	Player player;
 	Manager manager;
@@ -33,6 +36,9 @@ private:
 
 	sf::Font font;
 	sf::Music music;
+
+	float musicVolume = 50.f;
+	float sfxVolume = 50.f;
 
 	sf::Text fpsText;
 	const float updateFpsTextTime = .5f;

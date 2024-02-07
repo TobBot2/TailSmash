@@ -7,7 +7,8 @@
 #include "Game.h"
 
 Game::Game(sf::View view) :
-	player(sf::Vector2f(view.getSize()) / 2.f, sf::Vector2f(60.f, 35.f)), manager(sf::Vector2f(view.getSize())) {
+	player(sf::Vector2f(view.getSize()) / 2.f, sf::Vector2f(60.f, 35.f)),
+	manager(sf::Vector2f(view.getSize())) {
 	
 	this->view = view;
 	lowresWindow.create(view.getSize().x / pixelSize, view.getSize().y / pixelSize);
@@ -16,15 +17,15 @@ Game::Game(sf::View view) :
 	lowresSprite = sf::Sprite(lowresWindow.getTexture());
 	lowresSprite.setScale(sf::Vector2f(pixelSize, pixelSize));
 
-	if (!font.loadFromFile("resources/Retroica.ttf")) {
-		std::cout << "error loading font resources/Retroica.ttf\n";
+	if (!font.loadFromFile("resources/mont.otf")) {
+		std::cout << "error loading font resources/mont.otf\n";
 	}
 
 	if (!music.openFromFile("resources/musicLD38T9.wav")) {
 		std::cout << "error loading background music resources/musicLD38T9.wav\n";
 	}
 	music.setLoop(true);
-	music.play();
+	music.setVolume(musicVolume);
 
 	fpsText = sf::Text("", font);
 	fpsText.setFillColor(sf::Color(0xe9efecff));
@@ -34,6 +35,7 @@ Game::Game(sf::View view) :
 
 	manager.setFont(font);
 	manager.setPlayer(&player);
+	manager.setVolume(sfxVolume);
 	player.setManager(&manager);
 }
 
@@ -49,6 +51,13 @@ void Game::update(float elapsedTime) {
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 			state = GameState::Pause;
+		}
+	}
+	else if (state == GameState::Splash) {
+		splashDelay -= elapsedTime;
+		if (splashDelay <= 0) {
+			state = GameState::Menu;
+			music.play();
 		}
 	}
 }
@@ -93,7 +102,7 @@ void Game::render(sf::RenderTarget* target) {
 		ImVec2 windowPos((screenSize.x - buttonSize.x) / 2.f, (screenSize.y - buttonSize.y) / 2.f);
 
 		ImGui::SetNextWindowPos(windowPos);
-		ImGui::Begin("no window", nullptr,
+		ImGui::Begin("main buttons", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 		if (ImGui::Button("Play", buttonSize)) {
 			state = GameState::Play;
@@ -107,6 +116,21 @@ void Game::render(sf::RenderTarget* target) {
 		if (ImGui::Button("Quit", ImVec2(buttonSize.x * .4f, buttonSize.y * .4f))) {
 			ImGui::SFML::Shutdown();
 			exit(0); // unclean exit but idc
+		}
+		ImGui::End();
+
+		// settings/credits
+		ImGui::SetNextWindowPos(ImVec2(target->getSize().x - buttonSize.x * 1.1f, target->getSize().y - buttonSize.y * .55f));
+		ImGui::Begin("settings/credits", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		if (ImGui::Button("Settings", ImVec2(buttonSize.x * .48f, buttonSize.y * .4f))) {
+			state = GameState::Settings;
+		}
+		ImGui::SameLine();
+		ImGui::Spacing();
+		ImGui::SameLine();
+		if (ImGui::Button("Credits", ImVec2(buttonSize.x * .48f, buttonSize.y * .4f))) {
+			state = GameState::Credits;
 		}
 		ImGui::End();
 
@@ -153,7 +177,76 @@ void Game::render(sf::RenderTarget* target) {
 		lowresWindow.display();
 		target->draw(lowresSprite);
 	}
+	else if (state == GameState::Settings) {
+		ImVec2 screenSize(target->getSize().x * .8f, target->getSize().y * .8f);
+		ImGui::SetNextWindowSize(screenSize);
+		ImGui::SetNextWindowPos(ImVec2((target->getSize().x - screenSize.x) / 2.f, (target->getSize().y - screenSize.y) / 2.f));
+		ImGui::Begin("settings", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		
+		ImGui::SliderFloat("Music Volume", &musicVolume, 0.f, 100.f, "%.0f", ImGuiSliderFlags_AlwaysClamp);
+		music.setVolume(musicVolume);
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
+		ImGui::SliderFloat("SFX Volume", &sfxVolume, 0.f, 100.f, "%.0f", ImGuiSliderFlags_AlwaysClamp);
+		manager.setVolume(sfxVolume);
+
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
+		if (ImGui::Button("Back", ImVec2(screenSize.x / 10.f, screenSize.y / 11.f))) {
+			state = GameState::Menu;
+		}
+
+		ImGui::End();
+
+		lowresWindow.display();
+		target->draw(lowresSprite);
+	}
+	else if (state == GameState::Credits) {
+		ImVec2 creditsSize(target->getSize().x * .7f, target->getSize().y * .8f);
+		ImGui::SetNextWindowPos(ImVec2((target->getSize().x - creditsSize.x) / 2.f, target->getSize().y * .1f));
+		ImGui::SetNextWindowSize(creditsSize);
+		ImGui::Begin("credits", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+
+		ImGui::TextWrapped("Font - Mont (demo). https://www.dafont.com/mont.font");
+		ImGui::Text("");
+		ImGui::TextWrapped("Music - Ludem Dare 38 - Track 9. https://soundcloud.com/abstraction/ludum-dare-38-track-nine-game-loop-free-download?in=abstraction/sets/ludum-dare-challenge&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing");
+		ImGui::Text("");
+		ImGui::TextWrapped("Explosion sound effects:");
+		ImGui::TextWrapped(" - https://freesound.org/people/dobroide/sounds/24635/");
+		ImGui::TextWrapped(" - https://freesound.org/people/LiamG_SFX/sounds/322502/");
+		ImGui::TextWrapped(" - https://freesound.org/people/LiamG_SFX/sounds/322509/");
+		ImGui::SetCursorPos(ImVec2((creditsSize.x - creditsSize.x / 2.5f) / 2.f, ImGui::GetCursorPos().y + 40));
+		if (ImGui::Button("Back", ImVec2(creditsSize.x / 2.5f, creditsSize.x / 7.f))) {
+			state = GameState::Menu;
+		}
+
+		ImGui::End();
+
+		lowresWindow.display();
+		target->draw(lowresSprite);
+	}
+	else if (state == GameState::Splash) {
+		ImVec2 imageSize(ImGui::CalcTextSize("IT Co."));
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::Begin("splash page", nullptr,
+			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+		float fadeTime = 2.5f;
+		int alpha = splashDelay > 3.f - fadeTime ? (3.f - splashDelay) / fadeTime * 255 : 255;
+		ImGui::SetCursorPos(ImVec2((target->getSize().x - imageSize.x) / 2.f, (target->getSize().y - imageSize.y) / 2.f));
+		ImGui::TextColored(ImVec4(sf::Color(255, 255, 255, alpha)), "IT Co.");
+		//ImGui::Image(splashImg, sf::Color(255, 255, 255, alpha));
+		ImGui::End();
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+			state = GameState::Menu;
+			music.play();
+		}
+
+		lowresWindow.display();
+		target->draw(lowresSprite);
+	}
 
 	// DEBUG FPS COUNTER
-	target->draw(fpsText);
+	//target->draw(fpsText);
 }

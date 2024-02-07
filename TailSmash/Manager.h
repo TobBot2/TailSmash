@@ -13,6 +13,7 @@ public:
 
 	void setScoreNormal();
 	void setScoreFinish();
+	void setVolume(float volume);
 
 	void resetLevel(int level = -1);
 

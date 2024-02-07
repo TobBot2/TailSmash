@@ -16,7 +16,7 @@ int main()
 
 	// set fonts
 	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontFromFileTTF("resources/Retroica.ttf", window.getSize().y / 20.f);
+	io.Fonts->AddFontFromFileTTF("resources/mont.otf", window.getSize().y / 20.f);
 	ImGui::SFML::UpdateFontTexture();
 
 	// Set ImGui style options for buttons
