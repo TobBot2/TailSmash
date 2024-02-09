@@ -18,7 +18,7 @@ public:
 
 	Game(sf::View view);
 	void update(float elapsedTime);
-	void render(sf::RenderTarget* target);
+	void render(sf::RenderWindow* target);
 
 	void saveScores();
 

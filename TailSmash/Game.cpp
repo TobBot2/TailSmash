@@ -29,7 +29,6 @@ Game::Game(sf::View view) :
 		std::cout << "error loading background music resources/musicLD38T9.wav\n";
 	}
 	music.setLoop(true);
-	music.setVolume(musicVolume);
 
 	fpsText = sf::Text("", font);
 	fpsText.setFillColor(sf::Color(0xe9efecff));
@@ -39,8 +38,25 @@ Game::Game(sf::View view) :
 
 	manager.setFont(font);
 	manager.setPlayer(&player);
-	manager.setVolume(sfxVolume);
 	player.setManager(&manager);
+
+
+	// load settings
+	std::ifstream settingsIn;
+	settingsIn.open("resources/settings.bin", std::ios::binary);
+	settingsIn.read((char*)&musicVolume, sizeof(float));
+	if (settingsIn.gcount() != sizeof(float)) {
+		musicVolume = 25; // DEFUAULT VALUE
+	}
+	else {
+		settingsIn.read((char*)&sfxVolume, sizeof(float));
+		if (settingsIn.gcount() != sizeof(float)) {
+			sfxVolume = 25;
+		}
+	}
+	settingsIn.close();
+	music.setVolume(musicVolume);
+	manager.setVolume(sfxVolume);
 
 	// load highscores
 	std::ifstream highscoresIn;
@@ -91,7 +107,7 @@ void Game::update(float elapsedTime) {
 	}
 }
 
-void Game::render(sf::RenderTarget* target) {
+void Game::render(sf::RenderWindow* target) {
 	lowresWindow.setView(view);
 
 	// render
@@ -269,6 +285,12 @@ void Game::render(sf::RenderTarget* target) {
 			manager.setScores(scores);
 		}
 
+		std::ofstream settingsOut;
+		settingsOut.open("resources/settings.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+		settingsOut.write((char*)&musicVolume, sizeof(float));
+		settingsOut.write((char*)&sfxVolume, sizeof(float));
+		settingsOut.close();
+
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.f);
 		if (ImGui::Button("Back", ImVec2(screenSize.x / 10.f, screenSize.y / 11.f))) {
 			state = GameState::Menu;
@@ -286,14 +308,20 @@ void Game::render(sf::RenderTarget* target) {
 		ImGui::Begin("credits", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 
-		ImGui::TextWrapped("Font - Mont (demo). https://www.dafont.com/mont.font");
+		ImGui::TextWrapped("Font - Mont (demo). www.dafont.com/mont.font");
 		ImGui::Text("");
-		ImGui::TextWrapped("Music - Ludem Dare 38 - Track 9. https://soundcloud.com/abstraction/ludum-dare-38-track-nine-game-loop-free-download?in=abstraction/sets/ludum-dare-challenge&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing");
+		ImGui::TextWrapped("Music - Ludem Dare 38 - Track 9. soundcloud.com/abstraction/ludum-dare-38-track-nine-game-loop-free-download?in=abstraction/sets/ludum-dare-challenge&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing");
 		ImGui::Text("");
 		ImGui::TextWrapped("Explosion sound effects:");
-		ImGui::TextWrapped(" - https://freesound.org/people/dobroide/sounds/24635/");
-		ImGui::TextWrapped(" - https://freesound.org/people/LiamG_SFX/sounds/322502/");
-		ImGui::TextWrapped(" - https://freesound.org/people/LiamG_SFX/sounds/322509/");
+		ImGui::TextWrapped(" - freesound.org/people/dobroide/sounds/24635/");
+		ImGui::TextWrapped(" - freesound.org/people/LiamG_SFX/sounds/322502/");
+		ImGui::TextWrapped(" - freesound.org/people/LiamG_SFX/sounds/322509/");
+		ImGui::Text("");
+		ImGui::TextWrapped("Shaders:");
+		ImGui::TextWrapped(" - shadertoy.com/view/XtlSD7");
+		ImGui::TextWrapped(" - shadertoy.com/view/lldGzr");
+		
+
 		ImGui::SetCursorPos(ImVec2((creditsSize.x - creditsSize.x / 2.5f) / 2.f, ImGui::GetCursorPos().y + 40));
 		if (ImGui::Button("Back", ImVec2(creditsSize.x / 2.5f, creditsSize.x / 7.f))) {
 			state = GameState::Menu;

@@ -10,9 +10,70 @@
 // https://www.sfml-dev.org/tutorials/2.5
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(16 * 130, 9 * 130), "Tail Smash!");
+	sf::Vector2u optionsSize(fmin(sf::VideoMode::getDesktopMode().width * .8f, 500), fmin(sf::VideoMode::getDesktopMode().height * .8f, 500));
+	sf::RenderWindow displayOptions(sf::VideoMode(optionsSize.x * .8f, optionsSize.y * .8f), "Tail Smash Launcher");
+	sf::Clock optsClock;
+	ImGui::SFML::Init(displayOptions, true);
+	int resolutionChosen = 2;
+	std::vector<const char*> resolutions = { /*"Fullscreen",*/"4096x2160", "3200x1800", "2080x1170", "2048x1080", "1920x1080", "1600x900", "1280x720", "1024x600", "848x480", "640x360", "480x272"};
+	while (displayOptions.isOpen()) {
+		sf::Event event;
+		while (displayOptions.pollEvent(event)) {
+			ImGui::SFML::ProcessEvent(displayOptions, event);
+			switch (event.type) {
+			case sf::Event::Closed:
+				displayOptions.close();
+				ImGui::SFML::Shutdown();
+				return 0;
+			case sf::Event::KeyPressed:
+				switch (event.key.code) {
+				case sf::Keyboard::Escape:
+					displayOptions.close();
+					ImGui::SFML::Shutdown();
+					return 0;
+				default:
+					displayOptions.close();
+					break;
+				}
+			}
+		}
+
+		ImGui::SFML::Update(displayOptions, optsClock.restart());
+
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::SetNextWindowSize(ImVec2(displayOptions.getSize()));
+		ImGui::Begin("Tail Smash Launcher", nullptr, 
+			ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+
+		ImGui::Combo("Resolution", &resolutionChosen, &resolutions[0], resolutions.size());
+		ImGui::TextWrapped("Note that you can resize the game by dragging the bottom right corner of the window");
+
+		if (ImGui::Button("Launch", ImVec2(optionsSize.x * .5f, optionsSize.y * .2f))) {
+			displayOptions.close();
+		}
+
+		ImGui::End();
+
+		ImGui::SFML::Render(displayOptions);
+		displayOptions.display();
+	}
+
+	sf::VideoMode mode = sf::VideoMode(16 * 130, 9 * 130);
+	int flag = sf::Style::Default;
+	/*if (resolutionChosen == 0) {
+		mode = sf::VideoMode::getFullscreenModes()[0];
+		flag = sf::Style::Fullscreen;
+	}*/
+
+	sf::RenderWindow window(mode, "Tail Smash!", flag);
 	sf::Clock clock;
 	ImGui::SFML::Init(window, false);
+
+	if (resolutionChosen != 0) {
+		std::string resolutionStr = resolutions[resolutionChosen];
+		size_t split = resolutionStr.find("x");
+		window.setSize(sf::Vector2u(atoi(resolutionStr.substr(0, split).c_str()), atoi(resolutionStr.substr(split + 1, resolutionStr.length()).c_str())));
+	}
 
 	// set fonts
 	ImGuiIO& io = ImGui::GetIO();
