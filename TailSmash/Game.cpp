@@ -69,12 +69,48 @@ Game::Game(sf::View view) :
 	scores.pop_back(); // reads one too many... just pop the last one
 	highscoresIn.close();
 	if (scores.size() != manager.getLevelCount()) {
-		// highscores.bin has not been initialized. seed with -1's...
 		std::ofstream highscoresOut;
 		highscoresOut.open("resources/highscores.bin", std::ios::out | std::ios::trunc | std::ios::binary);
 		float uninitialized = -1.f;
-		for (int i = 0; i < manager.getLevelCount(); i++) {
-			highscoresOut.write((char*)&uninitialized, sizeof(float));
+		if (scores.size() == 5) {
+			// old highscore data. Convert...
+			std::vector<float> newScores = {};
+			for (int i = 0; i < manager.getLevelCount(); i++) {
+				switch (i) {
+				case 1:
+					highscoresOut.write((char*)&scores[0], sizeof(float));
+					newScores.push_back(scores[0]);
+					break;
+				case 2:
+					highscoresOut.write((char*)&scores[1], sizeof(float));
+					newScores.push_back(scores[1]);
+					break;
+				case 3:
+					highscoresOut.write((char*)&scores[2], sizeof(float));
+					newScores.push_back(scores[2]);
+					break;
+				case 5:
+					highscoresOut.write((char*)&scores[3], sizeof(float));
+					newScores.push_back(scores[3]);
+					break;
+				case 6:
+					highscoresOut.write((char*)&scores[4], sizeof(float));
+					newScores.push_back(scores[4]);
+					break;
+				default:
+					highscoresOut.write((char*)&uninitialized, sizeof(float));
+					newScores.push_back(-1);
+					break;
+				}
+			}
+			scores = newScores;
+			manager.setScores(scores);
+		}
+		else {
+			// highscores.bin has not been initialized. seed with -1's...
+			for (int i = 0; i < manager.getLevelCount(); i++) {
+				highscoresOut.write((char*)&uninitialized, sizeof(float));
+			}
 		}
 		netHighScore = -1.f;
 		highscoresOut.close();
