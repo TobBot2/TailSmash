@@ -12,6 +12,10 @@ void Level::setSpawn(sf::Vector2f position, float rotation) {
 	spawnRotation = rotation;
 }
 
+void Level::setName(std::string name) {
+	this->name = name;
+}
+
 void Level::addTarget(sf::Vector2f position) {
 	Target* t = new Target(position);
 	targets.push_back(t);

@@ -7,6 +7,7 @@
 
 // LEVEL 1
 Level* dots = new Level();
+dots->setName("Dots");
 dots->setSpawn(sf::Vector2f(550.f, 750.f), 90.f);
 dots->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 142));
 dots->addWall(sf::Vector2f(2, 1004), sf::Vector2f(2072, 162));
@@ -19,6 +20,7 @@ dots->addTarget(sf::Vector2f(1550, 550));
 
 // LEVEL 2
 Level* level2 = new Level();
+level2->setName("Lvl2");
 level2->setSpawn(sf::Vector2f(1700.f, 350.f), 0.f);
 level2->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 142));
 level2->addWall(sf::Vector2f(1952, 154), sf::Vector2f(122, 842));
@@ -40,6 +42,7 @@ level2->addTarget(sf::Vector2f(450, 850));
 
 // LEVEL 3
 Level* lvl12punch = new Level();
+lvl12punch->setName("1, 2, punch");
 lvl12punch->setSpawn(sf::Vector2f(300.f, 800.f), 90.f);
 lvl12punch->addWall(sf::Vector2f(3, 3), sf::Vector2f(2074, 144));
 lvl12punch->addWall(sf::Vector2f(3, 1003), sf::Vector2f(2074, 164));
@@ -55,6 +58,7 @@ lvl12punch->addTarget(sf::Vector2f(1350, 250));
 
 // LEVEL 4
 Level* rounder = new Level();
+rounder->setName("Rounder");
 rounder->setSpawn(sf::Vector2f(250.f, 250.f), 180.f);
 rounder->addWall(sf::Vector2f(2, 2), sf::Vector2f(2076, 146));
 rounder->addWall(sf::Vector2f(2, 1002), sf::Vector2f(2076, 166));
@@ -78,6 +82,7 @@ rounder->addTarget(sf::Vector2f(850, 850));
 
 // LEVEL 5
 Level* lvlAbstract = new Level();
+lvlAbstract->setName("Abstract");
 lvlAbstract->setSpawn(sf::Vector2f(1040.f, 585.f), 0);
 lvlAbstract->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 142));
 lvlAbstract->addWall(sf::Vector2f(2, 154), sf::Vector2f(142, 842));
@@ -101,6 +106,7 @@ lvlAbstract->addTarget(sf::Vector2f(1300, 300));
 lvlAbstract->addTarget(sf::Vector2f(900, 700));
 
 Level* spire = new Level();
+spire->setName("Spire");
 spire->setSpawn(sf::Vector2f(1650.f, 850.f), 45.f);
 spire->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 142));
 spire->addWall(sf::Vector2f(2, 1004), sf::Vector2f(2072, 162));
@@ -120,6 +126,7 @@ spire->addTarget(sf::Vector2f(1300, 400));
 spire->addTarget(sf::Vector2f(700, 700));
 
 Level* inside = new Level();
+inside->setName("Inside");
 inside->setSpawn(sf::Vector2f(1000.f, 250.f), 270.f);
 inside->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 142));
 inside->addWall(sf::Vector2f(2, 154), sf::Vector2f(142, 842));
@@ -147,6 +154,7 @@ inside->addTarget(sf::Vector2f(1800, 450));
 inside->addTarget(sf::Vector2f(200, 450));
 
 Level* spaceship = new Level();
+spaceship->setName("Spaceship");
 spaceship->setSpawn(sf::Vector2f(200.f, 350.f), 180.f);
 spaceship->addWall(sf::Vector2f(802, 304), sf::Vector2f(392, 92));
 spaceship->addWall(sf::Vector2f(502, 404), sf::Vector2f(342, 42));
@@ -183,6 +191,7 @@ spaceship->addTarget(sf::Vector2f(1300, 600));
 
 
 Level* cavern = new Level();
+cavern->setName("Cavern");
 cavern->setSpawn(sf::Vector2f(200.f, 750.f), 110.f);
 cavern->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 92));
 cavern->addWall(sf::Vector2f(2, 104), sf::Vector2f(92, 942));
@@ -238,6 +247,7 @@ cavern->addTarget(sf::Vector2f(1250, 600));
 cavern->addTarget(sf::Vector2f(1750, 600));
 
 Level* trenches = new Level(); // level 10
+trenches->setName("Trenches");
 trenches->setSpawn(sf::Vector2f(300.f, 600.f), 180.f);
 trenches->addWall(sf::Vector2f(702, 204), sf::Vector2f(42, 92));
 trenches->addWall(sf::Vector2f(702, 304), sf::Vector2f(292, 42));
@@ -257,6 +267,7 @@ trenches->addTarget(sf::Vector2f(850, 250));
 trenches->addTarget(sf::Vector2f(1300, 900));
 
 Level* labyrinth = new Level();
+labyrinth->setName("Labyrinth");
 labyrinth->setSpawn(sf::Vector2f(1300.f, 750.f), 90.f);
 labyrinth->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 92));
 labyrinth->addWall(sf::Vector2f(2002, 104), sf::Vector2f(72, 1062));
@@ -288,6 +299,7 @@ labyrinth->addTarget(sf::Vector2f(800, 950));
 
 
 Level* cleanup = new Level();
+cleanup->setName("Cleanup");
 cleanup->setSpawn(sf::Vector2f(250.f, 800.f), 90.f);
 cleanup->addWall(sf::Vector2f(2, 1054), sf::Vector2f(2072, 112));
 cleanup->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 92));
@@ -308,6 +320,7 @@ cleanup->addTarget(sf::Vector2f(1550, 850));
 cleanup->addTarget(sf::Vector2f(1750, 550));
 
 Level* diamond = new Level();
+diamond->setName("Diamond");
 diamond->setSpawn(sf::Vector2f(750.f, 800.f), 135.f);
 diamond->addWall(sf::Vector2f(2, 4), sf::Vector2f(392, 392));
 diamond->addWall(sf::Vector2f(402, 4), sf::Vector2f(292, 292));
@@ -343,6 +356,7 @@ diamond->addTarget(sf::Vector2f(1150, 400));
 diamond->addTarget(sf::Vector2f(950, 400));
 
 Level* warpspeed = new Level();
+warpspeed->setName("Warpspeed");
 warpspeed->setSpawn(sf::Vector2f(500.f, 550.f), 180.f);
 warpspeed->addWall(sf::Vector2f(202, 104), sf::Vector2f(392, 42));
 warpspeed->addWall(sf::Vector2f(1052, 304), sf::Vector2f(292, 42));
@@ -379,6 +393,7 @@ warpspeed->addTarget(sf::Vector2f(1250, 650));
 warpspeed->addTarget(sf::Vector2f(1600, 550));
 
 Level* asteroids = new Level();
+asteroids->setName("Asteroids");
 asteroids->setSpawn(sf::Vector2f(250.f, 200.f), 270.f);
 asteroids->addWall(sf::Vector2f(2, 4), sf::Vector2f(92, 1162));
 asteroids->addWall(sf::Vector2f(102, 1104), sf::Vector2f(1972, 62));
@@ -426,6 +441,7 @@ asteroids->addTarget(sf::Vector2f(950, 250));
 asteroids->addTarget(sf::Vector2f(1700, 750));
 
 Level* initiate = new Level();
+initiate->setName("Initiate");
 initiate->setSpawn(sf::Vector2f(200.f, 600.f), 180.f);
 initiate->addWall(sf::Vector2f(2, 1004), sf::Vector2f(592, 162));
 initiate->addWall(sf::Vector2f(602, 854), sf::Vector2f(492, 142));
@@ -457,6 +473,7 @@ initiate->addTarget(sf::Vector2f(1050, 700));
 initiate->addTarget(sf::Vector2f(1500, 576));
 
 Level* tailsmash = new Level();
+tailsmash->setName("Tail Smash");
 tailsmash->setSpawn(sf::Vector2f(450.f, 750.f), 180.f);
 tailsmash->addWall(sf::Vector2f(102, 104), sf::Vector2f(142, 42));
 tailsmash->addWall(sf::Vector2f(152, 154), sf::Vector2f(42, 142));
@@ -493,6 +510,7 @@ tailsmash->addWall(sf::Vector2f(2002, 404), sf::Vector2f(72, 692));
 tailsmash->addTarget(sf::Vector2f(1550, 750));
 
 Level* theplunge = new Level();
+theplunge->setName("The Plunge");
 theplunge->setSpawn(sf::Vector2f(600.f, 750.f), 135.f);
 theplunge->addWall(sf::Vector2f(802, 1004), sf::Vector2f(542, 162));
 theplunge->addWall(sf::Vector2f(952, 854), sf::Vector2f(292, 142));
@@ -552,6 +570,7 @@ theplunge->addTarget(sf::Vector2f(1700, 800));
 theplunge->addTarget(sf::Vector2f(1400, 350));
 
 Level* pillars = new Level();
+pillars->setName("Pillars");
 pillars->setSpawn(sf::Vector2f(300.f, 600.f), 135.f);
 pillars->addWall(sf::Vector2f(2, 4), sf::Vector2f(2072, 142));
 pillars->addWall(sf::Vector2f(2, 154), sf::Vector2f(92, 842));
@@ -596,6 +615,7 @@ pillars->addTarget(sf::Vector2f(1300, 250));
 pillars->addTarget(sf::Vector2f(1750, 600));
 
 Level* detour = new Level(); // level 20
+detour->setName("Detour");
 detour->setSpawn(sf::Vector2f(300.f, 950.f), 135.f);
 detour->addWall(sf::Vector2f(2, 554), sf::Vector2f(192, 92));
 detour->addWall(sf::Vector2f(402, 554), sf::Vector2f(192, 92));
@@ -639,6 +659,7 @@ detour->addTarget(sf::Vector2f(1200, 950));
 detour->addTarget(sf::Vector2f(300, 300));
 
 Level* bricks = new Level();
+bricks->setName("Bricks");
 bricks->setSpawn(sf::Vector2f(400.f, 600.f), 180.f);
 bricks->addWall(sf::Vector2f(952, 1104), sf::Vector2f(342, 62));
 bricks->addWall(sf::Vector2f(702, 1054), sf::Vector2f(242, 112));
@@ -759,6 +780,7 @@ bricks->addTarget(sf::Vector2f(1450, 550));
 
 
 Level* fractals = new Level();
+fractals->setName("Fractals");
 fractals->setSpawn(sf::Vector2f(500.f, 400.f), 270.f);
 fractals->addWall(sf::Vector2f(2, 404), sf::Vector2f(392, 392));
 fractals->addWall(sf::Vector2f(402, 4), sf::Vector2f(192, 192));
@@ -803,6 +825,7 @@ fractals->addTarget(sf::Vector2f(1050, 950));
 
 
 Level* fin = new Level();
+fin->setName("Fin.");
 fin->setSpawn(sf::Vector2f(400.f, 750.f), 180.f);
 fin->addWall(sf::Vector2f(202, 104), sf::Vector2f(192, 42));
 fin->addWall(sf::Vector2f(202, 204), sf::Vector2f(142, 42));
@@ -828,6 +851,7 @@ fin->addTarget(sf::Vector2f(950, 200));
 
 
 Level* nuisance = new Level();
+nuisance->setName("Nuisance");
 nuisance->setSpawn(sf::Vector2f(1800.f, 600.f), 0.f);
 nuisance->addWall(sf::Vector2f(902, 304), sf::Vector2f(92, 192));
 nuisance->addWall(sf::Vector2f(952, 504), sf::Vector2f(42, 242));
@@ -859,6 +883,7 @@ nuisance->addTarget(sf::Vector2f(500, 350));
 nuisance->addTarget(sf::Vector2f(500, 800));
 
 Level* theface = new Level();
+theface->setName("The Face");
 theface->setSpawn(sf::Vector2f(1000.f, 1000.f), 90.f);
 theface->addWall(sf::Vector2f(402, 4), sf::Vector2f(392, 392));
 theface->addWall(sf::Vector2f(1202, 4), sf::Vector2f(392, 392));

@@ -9,6 +9,7 @@ class Level {
 public:
 	void setPlayer(Player* player);
 	void setSpawn(sf::Vector2f position, float rotation);
+	void setName(std::string name);
 	void addTarget(sf::Vector2f position);
 	void addWall(sf::Vector2f topleft, sf::Vector2f size);
 
@@ -23,6 +24,7 @@ public:
 
 	sf::Vector2f getSpawnPos() const { return spawnPoint; }
 	float getSpawnRot() const { return spawnRotation; }
+	std::string getName() const { return name; }
 
 	bool isComplete() const { return complete; };
 
@@ -36,6 +38,8 @@ private:
 
 	std::vector<Target*> targets;
 	std::vector<Wall*> walls;
+
+	std::string name;
 
 	float timer = 0.f;
 	float highscore = -1.f;

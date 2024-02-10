@@ -207,49 +207,40 @@ void Game::render(sf::RenderWindow* target) {
 		target->draw(lowresSprite);
 	}
 	else if (state == GameState::LevelSelect) {
-		ImVec2 gridSize(target->getSize().x * .6f, target->getSize().y * .9f);
-		ImVec2 gridPos(target->getSize().x * .2f, target->getSize().y * .05f);
-		ImGui::SetNextWindowSize(gridSize);
-		ImGui::SetNextWindowPos(gridPos);
+		ImVec2 levelSelectSize(target->getSize().x * .6f, target->getSize().y * .9f);
+		ImVec2 levelSelectPos(target->getSize().x * .2f, target->getSize().y * .05f);
+		ImGui::SetNextWindowSize(levelSelectSize);
+		ImGui::SetNextWindowPos(levelSelectPos);
 		ImGui::Begin("level buttons", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 
-		ImVec2 buttonSize(ImGui::GetWindowSize().x / 8.f, ImGui::GetFontSize() * 1.1f);
+		ImVec2 buttonSize(ImGui::GetWindowSize().x * .6f, ImGui::GetFontSize() * 2.f);
 		const int GRID_SIZE = 5;
 		// Display grid of buttons
-		for (int i = 0; i < GRID_SIZE; ++i) {
-			ImGui::Columns(GRID_SIZE, nullptr, true);
-			ImGui::Separator();
-			for (int j = 0; j < GRID_SIZE; ++j) {
-				int level = i * GRID_SIZE + j;
-				if (level >= manager.getLevelCount()) {
-					j = GRID_SIZE;
-					i = GRID_SIZE;
-					break; // ugly exit loop method
-				}
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetWindowWidth() / 10.f - buttonSize.x / 2.f);
-				if (ImGui::Button((std::to_string(level + 1)).c_str(), buttonSize)) {
-					manager.resetLevel(level);
-					state = GameState::Play;
-				}
-
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetWindowWidth() / 10.f - buttonSize.x / 2.f);
-				if (level < manager.getLevelCount() && manager.getLevel(level)->getHighScore() >= 0) {
-					std::ostringstream ss;
-					ss << std::fixed << std::setprecision(3) << manager.getLevel(level)->getHighScore();
-					ImGui::Text(ss.str().c_str());
-				}
-				else {
-					ImGui::Text("");
-				}
-				ImGui::NextColumn();
+		for (int i = 0; i < manager.getLevelCount(); i++) {
+			// play button (w/ title)
+			if (ImGui::Button(manager.getLevel(i)->getName().c_str(), buttonSize)) {
+				manager.resetLevel(i);
+				state = GameState::Play;
 			}
-			ImGui::Separator();
+
+			// highscore
+			ImGui::SameLine();
+			if (i < manager.getLevelCount() && manager.getLevel(i)->getHighScore() >= 0) {
+				std::ostringstream ss;
+				ss << "Time: " << std::fixed << std::setprecision(3) << manager.getLevel(i)->getHighScore();
+				ImGui::Text(ss.str().c_str());
+			}
+			else {
+				ImGui::Text("No Time");
+			}
+
+			ImGui::Text(""); // spacing
 		}
 		ImGui::End();
 
-		ImVec2 backButtonSize(target->getSize().x * .4f, buttonSize.y * 1.5f);
-		ImGui::SetNextWindowPos(ImVec2(gridPos.x, gridPos.y + gridSize.y - buttonSize.y * 2.5f));
+		ImVec2 backButtonSize(levelSelectPos.x - 30, buttonSize.y * 1.5f);
+		ImGui::SetNextWindowPos(ImVec2(15, 15));
 		ImGui::Begin("back button", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 		// Exit button separate from the grid
