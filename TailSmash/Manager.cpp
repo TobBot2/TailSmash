@@ -31,11 +31,31 @@ Manager::Manager(sf::Vector2f gameSize)
 	barrelBig.setBuffer(expBig);
 
 #include "Levels.h"
-	levels.push_back(lvl1);
-	levels.push_back(lvl2);
-	levels.push_back(lvl3);
-	levels.push_back(lvl4);
-	levels.push_back(lvl5);
+	levels.push_back(tailsmash);
+	levels.push_back(dots);
+	levels.push_back(level2);
+	levels.push_back(lvl12punch);
+	levels.push_back(nuisance);
+	levels.push_back(lvlAbstract);
+	levels.push_back(rounder);
+	levels.push_back(fractals);
+	levels.push_back(trenches);
+	levels.push_back(detour);
+	levels.push_back(pillars);
+	levels.push_back(theplunge);
+	levels.push_back(bricks);
+	levels.push_back(cavern);
+	levels.push_back(labyrinth);
+	levels.push_back(theface);
+	levels.push_back(initiate);
+	levels.push_back(warpspeed);
+	levels.push_back(asteroids);
+	levels.push_back(spaceship);
+	levels.push_back(inside);
+	levels.push_back(diamond);
+	levels.push_back(cleanup);
+	levels.push_back(spire);
+	levels.push_back(fin);
 }
 
 void Manager::setPlayer(Player* player) {

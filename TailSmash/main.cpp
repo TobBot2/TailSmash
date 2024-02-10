@@ -10,12 +10,15 @@
 // https://www.sfml-dev.org/tutorials/2.5
 int main()
 {
-	sf::Vector2u optionsSize(fmin(sf::VideoMode::getDesktopMode().width * .8f, 500), fmin(sf::VideoMode::getDesktopMode().height * .8f, 500));
+	sf::Vector2u optionsSize(fmin(sf::VideoMode::getDesktopMode().width * .8f, 800), fmin(sf::VideoMode::getDesktopMode().height * .8f, 800));
 	sf::RenderWindow displayOptions(sf::VideoMode(optionsSize.x * .8f, optionsSize.y * .8f), "Tail Smash Launcher");
 	sf::Clock optsClock;
-	ImGui::SFML::Init(displayOptions, true);
+	ImGui::SFML::Init(displayOptions, false);
+	ImGuiIO& optsIo = ImGui::GetIO();
+	optsIo.Fonts->AddFontFromFileTTF("resources/mont.otf", optionsSize.y / 30.f);
+	ImGui::SFML::UpdateFontTexture();
 	int resolutionChosen = 2;
-	std::vector<const char*> resolutions = { /*"Fullscreen",*/"4096x2160", "3200x1800", "2080x1170", "2048x1080", "1920x1080", "1600x900", "1280x720", "1024x600", "848x480", "640x360", "480x272"};
+	std::vector<const char*> resolutions = { /*"Fullscreen",*/"3840x2160", "2560x1440", "2080x1170", "1920x1080", "1280x720", "848x480", "480x272"};
 	while (displayOptions.isOpen()) {
 		sf::Event event;
 		while (displayOptions.pollEvent(event)) {
