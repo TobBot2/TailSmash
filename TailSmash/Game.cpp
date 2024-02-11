@@ -250,12 +250,14 @@ void Game::render(sf::RenderWindow* target) {
 		ImGui::Begin("level buttons", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 
-		ImVec2 buttonSize(ImGui::GetWindowSize().x * .6f, ImGui::GetFontSize() * 2.f);
+		ImVec2 buttonSize(ImGui::GetWindowSize().x * .5f, ImGui::GetFontSize() * 2.f);
 		const int GRID_SIZE = 5;
-		// Display grid of buttons
+		ImGui::PushStyleVar(ImGuiStyleVar_ButtonTextAlign, ImVec2(0.f, .5f));
 		for (int i = 0; i < manager.getLevelCount(); i++) {
 			// play button (w/ title)
-			if (ImGui::Button(manager.getLevel(i)->getName().c_str(), buttonSize)) {
+			std::ostringstream lvlname;
+			lvlname << (i + 1) << ". " << manager.getLevel(i)->getName();
+			if (ImGui::Button(lvlname.str().c_str(), buttonSize)) {
 				manager.resetLevel(i);
 				state = GameState::Play;
 			}
@@ -273,6 +275,7 @@ void Game::render(sf::RenderWindow* target) {
 
 			ImGui::Text(""); // spacing
 		}
+		ImGui::PopStyleVar();
 		ImGui::End();
 
 		ImVec2 backButtonSize(levelSelectPos.x - 30, buttonSize.y * 1.5f);
@@ -282,6 +285,22 @@ void Game::render(sf::RenderWindow* target) {
 		// Exit button separate from the grid
 		if (ImGui::Button("Back", backButtonSize)) {
 			state = GameState::Menu;
+		}
+		if (ImGui::Button("Share", backButtonSize)) {
+			std::ostringstream scoresText;
+			scores = manager.getScores();
+			float runningTotal = 0;
+			for (int i = 0; i < scores.size(); i++) {
+				if (scores[i] != -1) {
+					scoresText << "lvl " << (i + 1) << " \'" << manager.getLevel(i)->getName() << "\' time: " << scores[i] << "\n";
+					runningTotal += scores[i];
+				}
+				else {
+					scoresText << "lvl " << (i + 1) << " \'" << manager.getLevel(i)->getName() << "\' time: no time\n";
+				}
+			}
+			scoresText << "Running total: " << runningTotal;
+			ImGui::SetClipboardText(scoresText.str().c_str());
 		}
 
 		ImGui::End();
@@ -335,7 +354,15 @@ void Game::render(sf::RenderWindow* target) {
 		ImGui::Begin("credits", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
 
-		ImGui::TextWrapped("Font - Mont (demo). www.dafont.com/mont.font");
+		ImGui::TextWrapped("Tail Smash. By Trevor Black");
+		ImGui::TextWrapped(" - trevoroblack@gmail.com");
+		ImGui::TextWrapped(" - github.com/tobbot2");
+		ImGui::TextWrapped(" - tobbot2.itch.io");
+		ImGui::Text("");
+		ImGui::TextWrapped("Created using SFML in C++ - sfml-dev.org");
+		ImGui::TextWrapped("GUI from Dear ImGui's SFML backend - github.com/SFML/imgui-sfml");
+		ImGui::Text("");
+		ImGui::TextWrapped("Font - Mont (demo). dafont.com/mont.font");
 		ImGui::Text("");
 		ImGui::TextWrapped("Music - Ludem Dare 38 - Track 9. soundcloud.com/abstraction/ludum-dare-38-track-nine-game-loop-free-download?in=abstraction/sets/ludum-dare-challenge&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing");
 		ImGui::Text("");
