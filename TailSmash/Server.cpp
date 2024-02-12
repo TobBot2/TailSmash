@@ -76,8 +76,8 @@ bool Server::connect(sf::IpAddress peer, unsigned short peerPort) {
 		}
 		if (!received) {
 			if (socket.receive(packet, peer, peerPort) == sf::Socket::Done) {
-				std::cout << "received\n";
 				if (onreceive(packet)) {
+					std::cout << "received\n";
 					peers.push_back(std::make_pair(peer, peerPort));
 					received = true;
 				}
