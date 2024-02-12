@@ -8,7 +8,7 @@ class Level;
 class Manager;
 class Player {
 public:
-	Player(sf::Vector2f pos, sf::Vector2f size);
+	Player(sf::Vector2f pos, bool offline = true);
 
 	void setManager(Manager* manager);
 	void setLevel(Level* level);
@@ -20,6 +20,8 @@ public:
 	void disable();
 
 	const sf::RectangleShape& getShape() const;
+	sf::Vector2f getTailPos() const;
+	void updateRawPosition(sf::Vector2f bodyPos, float bodyRot, sf::Vector2f ballPos);
 private:
 	struct ChainNode {
 		ChainNode(const sf::Vector2f* parentPos, sf::Vector2f pos)
@@ -48,6 +50,8 @@ private:
 	float friction = 240.f;
 
 	bool alive = true;
+
+	bool offline = true;
 
 	std::vector<ChainNode*> chainNodes;
 

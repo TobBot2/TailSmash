@@ -2,6 +2,11 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <SFML/Network.hpp>
+
+#include <mutex>
+
+#include "Server.h"
 
 class Player;
 class Level;
@@ -10,6 +15,11 @@ public:
 	Manager(sf::Vector2f gameSize);
 	void setPlayer(Player* player);
 	void setFont(sf::Font& font);
+
+	bool receivePacket(sf::Packet packet);
+	std::pair<sf::IpAddress, unsigned short> getIp();
+	void openServer();
+	bool connect(sf::IpAddress peer, unsigned short port) { return server.connect(peer, port); }
 
 	void setScoreNormal();
 	void setScoreFinish();
@@ -32,6 +42,9 @@ public:
 private:
 	Player* player;
 	std::vector<Level*> levels;
+
+	Server server;
+	std::map<int, Player*> peerPlayers; // id, player
 
 	float timeScale = 1.f;
 	float globalTime = 0.f;

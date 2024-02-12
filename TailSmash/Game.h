@@ -13,7 +13,8 @@ public:
 		Settings,
 		Credits,
 		Play,
-		Pause
+		Pause,
+		Console,
 	};
 
 	Game(sf::View view);
@@ -31,6 +32,9 @@ private:
 
 	Player player;
 	Manager manager;
+
+	std::string consoleInput;
+	std::vector<std::string> consoleHistory;
 
 	sf::View view;
 	sf::RenderTexture lowresWindow;

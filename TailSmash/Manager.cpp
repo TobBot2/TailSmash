@@ -9,7 +9,7 @@
 #include "Player.h"
 
 Manager::Manager(sf::Vector2f gameSize) 
-	: gameSize(gameSize) {
+	: gameSize(gameSize), server(*this) {
 
 	scoreText.setFillColor(sf::Color(0xe9efecff));
 	scoreText.setOutlineColor(sf::Color(0x211e20ff));
@@ -72,6 +72,53 @@ void Manager::setFont(sf::Font& font) {
 	scoreText = sf::Text("0.000", font);
 }
 
+bool Manager::receivePacket(sf::Packet packet)
+{
+	sf::Uint32 id;
+	if (packet >> id) {
+		sf::Uint8 flag;
+		packet >> flag;
+		sf::Vector2f bodyPos(0, 0);
+		float bodyRot = 0;
+		sf::Vector2f tailPos(0, 0);
+		std::cout << "flag: " << flag << std::endl;
+		switch (flag) {
+		case 0:
+			// update player position
+			packet >> bodyPos.x >> bodyPos.y >> bodyRot >> tailPos.x >> tailPos.y;
+			peerPlayers[id]->updateRawPosition(bodyPos, bodyRot, tailPos);
+			break;
+		case 1:
+			// player connect
+			// don't add the same player twice.
+			if (peerPlayers.find(id) == peerPlayers.end()) {
+				peerPlayers.insert(std::make_pair(id, new Player(gameSize / 2.f, false)));
+			}
+			break;
+		case 2:
+			// player disconnect
+			delete peerPlayers[id];
+			peerPlayers.erase(id);
+			break;
+		}
+
+		return true;
+	}
+	else {
+		std::cout << "bad packet" << std::endl;
+		return false;
+	}
+}
+
+std::pair<sf::IpAddress, unsigned short> Manager::getIp()
+{
+	return server.getIp();
+}
+
+void Manager::openServer() {
+	server.open();
+}
+
 void Manager::setScoreNormal() {
 	scoreText.setOutlineThickness(scoreTextOutlineSize);
 	scoreText.setCharacterSize(scoreTextSize);
@@ -131,6 +178,12 @@ void Manager::update(float dt) {
 	player->update(sdt);
 	levels[activeLevel]->update(sdt);
 	globalTime += sdt;
+
+	{ Server::Guard g(server.getMutex());
+		for (std::pair<int, Player*> p : peerPlayers) {
+			// TODO: check for collision
+		}
+	}
 
 	if (slomoTimer > 0.f) {
 		slomoTimer -= dt;

@@ -2,16 +2,18 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <string>
 #include <SFML/Audio.hpp>
 
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include "ImConsole.h"
 
 #include "Game.h"
 #include "Level.h"
 
 Game::Game(sf::View view) :
-	player(sf::Vector2f(view.getSize()) / 2.f, sf::Vector2f(60.f, 35.f)),
+	player(sf::Vector2f(view.getSize()) / 2.f),
 	manager(sf::Vector2f(view.getSize())) {
 	
 	this->view = view;
@@ -178,6 +180,10 @@ void Game::render(sf::RenderWindow* target) {
 		manager.renderUI(target);
 	}
 	else if (state == GameState::Menu) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tilde)) {
+			state = GameState::Console;
+		}
+
 		scores = manager.getScores();
 		netHighScore = 0.f;
 		for (int i = 0; i < scores.size(); i++) {
@@ -403,6 +409,69 @@ void Game::render(sf::RenderWindow* target) {
 			music.play();
 		}
 
+		lowresWindow.display();
+		target->draw(lowresSprite);
+	}
+	else if (state == GameState::Console) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+			state == GameState::Menu;
+		}
+		
+		ImConsole c(consoleInput, consoleHistory);
+		std::pair<std::string, bool> command = c.Draw("Console", target->getSize());
+		consoleHistory = c.getHistory();
+
+		if (command.second) {
+			if (command.first[0] == 'h') {
+				consoleHistory.push_back("> help");
+				consoleHistory.push_back("  commands:");
+				consoleHistory.push_back("   - help");
+				consoleHistory.push_back("   - ip");
+				consoleHistory.push_back("   - connect <ip> <port>");
+			}
+			else if (command.first[0] == 'i') {
+				consoleHistory.push_back("> ip");
+				std::cout << "ip...\n";
+				std::pair<sf::IpAddress, unsigned short> ip = manager.getIp();
+				std::cout << "got ip...\n";
+				if (ip.first == sf::IpAddress::None) {
+					std::cout << "no ip. opening server...\n";
+					consoleHistory.push_back("opening server... (wait 10 seconds)\n");
+					manager.openServer();
+					std::cout << "server open. getting ip again...\n";
+					ip = manager.getIp();
+					std::cout << "got ip for real\n";
+				}
+				std::ostringstream ss;
+				ss << "  ip: " << ip.first.toString() << " port: " << ip.second << std::endl;
+				std::cout << "server open...\n" << ss.str();
+				consoleHistory.push_back(ss.str().c_str());
+			}
+			else if (command.first[0] == 'c') {
+				consoleHistory.push_back("> connect"); // ex of command.first: "connect 129.220.159.214 53725"
+				std::string ipandport = command.first.substr(command.first.find(' ') + 1);
+				std::string peerIpStr = ipandport.substr(0, ipandport.find(' '));
+				std::string peerPortStr = ipandport.substr(ipandport.find(' '));
+
+				std::ostringstream ss;
+				ss << "  connecting to " << peerIpStr << ":" << atoi(peerPortStr.c_str()) << std::endl;
+				consoleHistory.push_back(ss.str().c_str());
+				if (manager.connect(sf::IpAddress(peerIpStr), atoi(peerPortStr.c_str()))) {
+					consoleHistory.push_back("  connected.");
+					state == GameState::Play;
+					manager.resetLevel(21);
+				}
+				else {
+					consoleHistory.push_back("  failed to connect.");
+				}
+			}
+
+			// trim consoleHistory.
+			while (consoleHistory.size() > 8) {
+				consoleHistory.erase(consoleHistory.begin());
+			}
+		}
+		
 		lowresWindow.display();
 		target->draw(lowresSprite);
 	}

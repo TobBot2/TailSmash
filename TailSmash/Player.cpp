@@ -6,8 +6,10 @@
 #include "Target.h"
 #include "Wall.h"
 
-Player::Player(sf::Vector2f pos, sf::Vector2f size)
+Player::Player(sf::Vector2f pos, bool offline)
 	: particles(&bodyShape.getPosition()) {
+	sf::Vector2f size(60.f, 35.f);
+
 	bodyShape.setPosition(pos);
 	bodyShape.setSize(size);
 	bodyShape.setOrigin(size / 2.f);
@@ -27,6 +29,8 @@ Player::Player(sf::Vector2f pos, sf::Vector2f size)
 	particles.setFriction(.98f);
 	particles.setSpawnRange(size.y / 2.f);
 
+	this->offline = offline;
+
 	generateChain();
 }
 
@@ -38,9 +42,17 @@ void Player::update(float dt) {
 	particles.update(dt);
 	float speedPercent = abs(vel) / maxVel;
 
-	sf::Vector2f input = alive? getInput() : sf::Vector2f(0.f, 0.f);
+	if (offline) {
+		sf::Vector2f input = alive? getInput() : sf::Vector2f(0.f, 0.f);
+		bodyShape.rotate(input.x * steerAcc * sqrt(speedPercent)*dt);
+		if (speedPercent <= 1.f) {
+			vel += input.y * acc * dt;
+		}
+	}
+	else {
+		// manually update input
+	}
 
-	bodyShape.rotate(input.x * steerAcc * sqrt(speedPercent)*dt);
 	float rads = bodyShape.getRotation() * 3.141f / 180.f;
 
 	if (abs(vel) > 0.f) {
@@ -48,9 +60,6 @@ void Player::update(float dt) {
 		for (int i = 0; i < 10; i++) {
 			particles.emit(sf::Vector2f(-vel, -vel) * 30000.f, sf::Color(70, 40, 35, 100 + rand() % 100), .3f);
 		}
-	}
-	if (speedPercent <= 1.f) {
-		vel += input.y * acc * dt;
 	}
 
 	bodyShape.move(cos(rads) * vel * dt, sin(rads) * vel * dt);
@@ -105,6 +114,18 @@ sf::Vector2f Player::getInput() {
 	float mag = sqrtf(axis.x * axis.x + axis.y * axis.y);
 	if (mag <= 1.f) return axis;
 	return axis / mag;
+}
+
+sf::Vector2f Player::getTailPos() const
+{
+	return tailShape.getPosition();
+}
+
+void Player::updateRawPosition(sf::Vector2f bodyPos, float bodyRot, sf::Vector2f ballPos) {
+	bodyShape.setPosition(bodyPos);
+	bodyShape.setRotation(bodyRot);
+
+	tailShape.setPosition(ballPos);
 }
 
 void Player::checkCollision() {
